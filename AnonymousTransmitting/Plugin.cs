@@ -1,7 +1,9 @@
 ﻿using Exiled.API.Features;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Exiled.API.Enums;
 using Exiled.API.Features.Items;
 using Exiled.Events.EventArgs.Interfaces;
@@ -15,15 +17,19 @@ public class Plugin : Plugin<Config>
     public override string Prefix => "AnonymousTransmitting";
     public override string Name => Prefix;
     public override string Author => "Banalny_Banan";
-    public override Version Version { get; } = new(1, 0, 0);
+    public override Version Version { get; } = new(1, 2, 0);
     public override Version RequiredExiledVersion { get; } = new(8, 8, 0);
 
+    private bool xpSystemPresent = false;
+    
     public override void OnEnabled()
     {
         if (Config.AnonymizeRadio)
             Handlers.Player.Transmitting += OnTransmitting;
         if (Config.AnonymizeIntercom)
             Handlers.Player.IntercomSpeaking += OnTransmitting;
+        if(File.Exists(Path.Combine(Paths.Plugins, "XPSystem-EXILED.dll")))
+            xpSystemPresent = true;
         base.OnEnabled();
     }
 
@@ -39,8 +45,14 @@ public class Plugin : Plugin<Config>
     private IEnumerator<float> OnTransmitting(IPlayerEvent ev)
     {
         if (!(ev.Player.IsTransmitting || Intercom.Speaker == ev.Player) || replacedNicknames.ContainsKey(ev.Player)) yield break;
-        replacedNicknames[ev.Player] = ev.Player.CustomName;
 
+        if (xpSystemPresent)
+            replacedNicknames[ev.Player] = Regex.Replace(ev.Player.Nickname, @"^\[Lv\.\d+\]", "");
+        else
+            replacedNicknames[ev.Player] = ev.Player.CustomName;
+
+        Log.Debug($"Saved {ev.Player.Nickname}'s nickname: {replacedNicknames[ev.Player]}");
+        
         string frequency;
         string range;
         
@@ -63,8 +75,12 @@ public class Plugin : Plugin<Config>
             .Replace("%team%", ev.Player.Role.Team.ToString());
 
         yield return Timing.WaitUntilTrue(() => !ev.Player.IsTransmitting && Intercom.Speaker != ev.Player);
-
-        ev.Player.CustomName = replacedNicknames[ev.Player] == ev.Player.Nickname ? null : replacedNicknames[ev.Player];
+        
+        if (replacedNicknames[ev.Player] == ev.Player.Nickname) ev.Player.CustomName = null;
+        else ev.Player.DisplayNickname = replacedNicknames[ev.Player];
+        
+        Log.Debug($"Restored {ev.Player.Nickname}'s nickname: {replacedNicknames[ev.Player]}");
+        
         replacedNicknames.Remove(ev.Player);
     }
 
