@@ -18,7 +18,7 @@ public class Plugin : Plugin<Config>
     public override string Prefix => "AnonymousTransmitting";
     public override string Name => Prefix;
     public override string Author => "Banalny_Banan";
-    public override Version Version { get; } = new(1, 2, 1);
+    public override Version Version { get; } = new(1, 3, 1);
     public override Version RequiredExiledVersion { get; } = new(8, 8, 0);
 
     private bool xpSystemPresent = false;
