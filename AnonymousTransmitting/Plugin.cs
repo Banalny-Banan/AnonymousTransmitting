@@ -48,7 +48,7 @@ public class Plugin : Plugin<Config>
         if (!(ev.Player.IsTransmitting || Intercom.Speaker == ev.Player) || replacedNicknames.ContainsKey(ev.Player)) yield break;
 
         if (xpSystemPresent)
-            replacedNicknames[ev.Player] = Regex.Replace(ev.Player.Nickname, @"^\[Lv\.\d+\]", "");
+            replacedNicknames[ev.Player] = Regex.Replace(ev.Player.CustomName, @"^\[Lv\.\d+\]", "");
         else
             replacedNicknames[ev.Player] = ev.Player.CustomName;
 
