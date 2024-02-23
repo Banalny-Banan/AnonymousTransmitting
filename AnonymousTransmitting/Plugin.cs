@@ -31,8 +31,6 @@ public class Plugin : Plugin<Config>
             Handlers.Player.IntercomSpeaking += OnTransmitting;
         if(Config.ForceXpSystemFix || Loader.Plugins.Any(plg => plg.Name.Contains("xpsystem")) || Directory.GetFiles(Paths.Plugins).Any(file => file.Contains("xpsystem")))
             xpSystemPresent = true;
-        if(Config.ForceXpSystemFix)
-            xpSystemPresent = true;
         base.OnEnabled();
     }
 
