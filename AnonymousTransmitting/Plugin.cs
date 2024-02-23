@@ -29,7 +29,7 @@ public class Plugin : Plugin<Config>
             Handlers.Player.Transmitting += OnTransmitting;
         if (Config.AnonymizeIntercom)
             Handlers.Player.IntercomSpeaking += OnTransmitting;
-        if(Loader.Plugins.Any(plg => plg.Name == "XPSystem"))
+        if(Config.ForceXpSystemFix || Loader.Plugins.Any(plg => plg.Name.Contains("xpsystem")) || Directory.GetFiles(Paths.Plugins).Any(file => file.Contains("xpsystem")))
             xpSystemPresent = true;
         if(Config.ForceXpSystemFix)
             xpSystemPresent = true;
