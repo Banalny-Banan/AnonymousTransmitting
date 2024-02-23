@@ -21,4 +21,7 @@ public class Config : IConfig
     )]
 
     public string NicknameReplacer { get; set; } = "%frequency% (%range%)";
+    
+    [Description("Will force the plugin to enable XPSystem fix, even if it hasn't detected the XPSystem plugin")]
+    public bool ForceXpSystemFix { get; set; } = false;
 }

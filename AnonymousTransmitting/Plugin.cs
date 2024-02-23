@@ -18,7 +18,7 @@ public class Plugin : Plugin<Config>
     public override string Prefix => "AnonymousTransmitting";
     public override string Name => Prefix;
     public override string Author => "Banalny_Banan";
-    public override Version Version { get; } = new(1, 3, 1);
+    public override Version Version { get; } = new(1, 4, 1);
     public override Version RequiredExiledVersion { get; } = new(8, 8, 0);
 
     private bool xpSystemPresent = false;
@@ -30,6 +30,8 @@ public class Plugin : Plugin<Config>
         if (Config.AnonymizeIntercom)
             Handlers.Player.IntercomSpeaking += OnTransmitting;
         if(Loader.Plugins.Any(plg => plg.Name == "XPSystem"))
+            xpSystemPresent = true;
+        if(Config.ForceXpSystemFix)
             xpSystemPresent = true;
         base.OnEnabled();
     }
@@ -48,7 +50,7 @@ public class Plugin : Plugin<Config>
         if (!(ev.Player.IsTransmitting || Intercom.Speaker == ev.Player) || replacedNicknames.ContainsKey(ev.Player)) yield break;
 
         if (xpSystemPresent)
-            replacedNicknames[ev.Player] = Regex.Replace(ev.Player.CustomName, @"^\[Lv\.\d+\]", "");
+            replacedNicknames[ev.Player] = Regex.Replace(ev.Player.CustomName, @"^\[[^\]]*\d+\]", "");
         else
             replacedNicknames[ev.Player] = ev.Player.CustomName;
 
